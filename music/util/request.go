@@ -7,14 +7,11 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"music/api"
-	"music/log"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 )
-
-var logs log.Logger
 
 var client = &http.Client{
 	Timeout: time.Second * 10,
@@ -112,7 +109,7 @@ func do(req *http.Request, cookies []*http.Cookie) (*http.Response, error) {
 	return
 }*/
 
-func CloudRequest(URL string, params map[string]string, cookies []*http.Cookie) (res []byte, respCookies []*http.Cookie, err error) {
+func CloudRequest(URL string, params map[string]interface{}, cookies []*http.Cookie) (res []byte, respCookies []*http.Cookie, err error) {
 	params["csrf_token"] = GetCookieValueByName(cookies, "__csrf")
 
 	b, err := json.Marshal(params)
@@ -137,6 +134,7 @@ func CloudRequest(URL string, params map[string]string, cookies []*http.Cookie) 
 		err = errors.WithStack(err)
 		return
 	}
+	fmt.Println(URL + "sssssssssss")
 	resp, err := do(req, cookies)
 	if err != nil {
 		err = errors.WithStack(err)

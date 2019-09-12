@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/pkg/errors"
 	"music/api/types"
 	"music/log"
@@ -31,6 +32,7 @@ func TestMusicModule_SearchMusic(t *testing.T) {
 		Code int `json:"code"`
 	}
 	var b Song
+	fmt.Println(res)
 	err = json.Unmarshal(res, &b)
 	if err != nil {
 		err = errors.WithStack(err)
