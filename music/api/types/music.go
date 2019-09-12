@@ -44,3 +44,15 @@ type Artists struct {
 	More     bool      `json:"more"`
 	Code     int       `json:"code"`
 }
+
+type GetLyricsRequest struct {
+	ID string `json:"id"`
+}
+
+type Lyrics struct {
+	LRC struct {
+		Version int    `json:"version"`
+		Lyric   string `json:"lyric"`
+	} `json:"lrc"`
+	Code int `json:"code"`
+}

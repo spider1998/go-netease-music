@@ -56,3 +56,21 @@ func TestMusicModule_ArtistsList(t *testing.T) {
 	}
 	t.Log(len(b.HotSongs))
 }
+
+func TestMusicModule_GetLyrics(t *testing.T) {
+	Loggers, _ = log.New(true, "test")
+	Api = NewCloudAPI(Loggers, "")
+	res, err := Api.Music().GetLyrics(types.GetLyricsRequest{
+		ID: "33894312",
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	var b map[string]interface{}
+	err = json.Unmarshal(res, &b)
+	if err != nil {
+		err = errors.WithStack(err)
+		return
+	}
+	t.Log(b)
+}

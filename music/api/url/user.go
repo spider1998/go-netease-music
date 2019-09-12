@@ -20,7 +20,7 @@ const (
 	SearchMusic      = `/weapi/search/get`
 	GetHotSearchList = `/weapi/search/hot`
 	SearchSuggest    = `/weapi/search/suggest/web`
-	GetMusicLyric    = `/weapi/song/lyric?os=osx&id=`
+	GetMusicLyric    = `/weapi/song/lyric?lv=-1&kv=-1&tv=-1`
 	GetSongDetail    = `/weapi/v3/song/detail`
 
 	ArtistsList = `/weapi/v1/artist/`

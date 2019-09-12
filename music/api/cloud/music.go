@@ -10,6 +10,27 @@ type MusicModule struct {
 	api *CloudAPI
 }
 
+func (m MusicModule) GetLyrics(request types.GetLyricsRequest) (res []byte, err error) {
+	defaultCookies, err := util.GetCookiesForEnv()
+	if err != nil {
+		return
+	}
+	req := util.StructToMapJSON(request)
+	writeReq := util.StructToMapJSON(request)
+	res = readApiCache(req, url.GetMusicLyric)
+	if res != nil {
+		return
+	}
+	res, cookies, err := util.CloudRequest(url.Host+url.GetMusicLyric, req, defaultCookies)
+	if err != nil {
+		return
+	}
+	cookies = append(cookies, defaultCookies...)
+	util.WriteCookieToEnv(cookies)
+	writeApiCache(url.GetMusicLyric, writeReq, res)
+	return
+}
+
 func (m MusicModule) ArtistsList(id string, request types.Base) (res []byte, err error) {
 	defaultCookies, err := util.GetCookiesForEnv()
 	if err != nil {

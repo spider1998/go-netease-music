@@ -142,27 +142,27 @@ func GetCookiesForEnv() (cookies []*http.Cookie, err error) {
 		return
 	}
 	num := len(strings.Split(envCookies.Name, "&"))
-	for i := 1; i < num+1; i++ {
+	for i := 1; i < num; i++ {
 		var cookie http.Cookie
 		cookie.Name = strings.Split(envCookies.Name, "&")[i]
-		cookie.Value = strings.Split(envCookies.Name, "&")[i]
-		cookie.Path = strings.Split(envCookies.Name, "&")[i]
-		cookie.Domain = strings.Split(envCookies.Name, "&")[i]
-		cookie.Expires = parseTime(strings.Split(envCookies.Name, "&")[i])
-		cookie.RawExpires = strings.Split(envCookies.Name, "&")[i]
-		cookie.MaxAge = stringToInt(strings.Split(envCookies.Name, "&")[i])
-		cookie.Secure = stringToBool(strings.Split(envCookies.Name, "&")[i])
-		cookie.HttpOnly = stringToBool(strings.Split(envCookies.Name, "&")[i])
-		cookie.SameSite = http.SameSite(stringToInt(strings.Split(envCookies.Name, "&")[i]))
-		cookie.Raw = strings.Split(envCookies.Name, "&")[i]
-		cookie.Unparsed = strings.Split(strings.Split(envCookies.Name, "&")[i], ",")
+		cookie.Value = strings.Split(envCookies.Value, "&")[i]
+		cookie.Path = strings.Split(envCookies.Path, "&")[i]
+		cookie.Domain = strings.Split(envCookies.Domain, "&")[i]
+		cookie.Expires = parseTime(strings.Split(envCookies.Expires, "&")[i]).UTC()
+		cookie.RawExpires = strings.Split(envCookies.RawExpires, "&")[i]
+		cookie.MaxAge = stringToInt(strings.Split(envCookies.MaxAge, "&")[i])
+		cookie.Secure = stringToBool(strings.Split(envCookies.Secure, "&")[i])
+		cookie.HttpOnly = stringToBool(strings.Split(envCookies.HttpOnly, "&")[i])
+		cookie.SameSite = http.SameSite(stringToInt(strings.Split(envCookies.SameSite, "&")[i]))
+		cookie.Raw = strings.Split(envCookies.Raw, "&")[i]
+		cookie.Unparsed = strings.Split(strings.Split(envCookies.Unparsed, "&")[i], ",")
 		cookies = append(cookies, &cookie)
 	}
 	return
 }
 
 func parseTime(timeString string) (t time.Time) {
-	parsedTime, err := time.Parse("2006-01-02 15:04:05", timeString)
+	parsedTime, err := time.Parse("2006-01-02 15:04:05", timeString[:19])
 	if err != nil {
 		panic(err)
 		return

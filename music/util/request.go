@@ -110,6 +110,9 @@ func do(req *http.Request, cookies []*http.Cookie) (*http.Response, error) {
 }*/
 
 func CloudRequest(URL string, params map[string]interface{}, cookies []*http.Cookie) (res []byte, respCookies []*http.Cookie, err error) {
+	if params == nil {
+		params = make(map[string]interface{})
+	}
 	params["csrf_token"] = GetCookieValueByName(cookies, "__csrf")
 
 	b, err := json.Marshal(params)
