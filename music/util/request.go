@@ -134,7 +134,6 @@ func CloudRequest(URL string, params map[string]interface{}, cookies []*http.Coo
 		err = errors.WithStack(err)
 		return
 	}
-	fmt.Println(URL + "sssssssssss")
 	resp, err := do(req, cookies)
 	if err != nil {
 		err = errors.WithStack(err)

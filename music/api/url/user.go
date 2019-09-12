@@ -22,4 +22,6 @@ const (
 	SearchSuggest    = `/weapi/search/suggest/web`
 	GetMusicLyric    = `/weapi/song/lyric?os=osx&id=`
 	GetSongDetail    = `/weapi/v3/song/detail`
+
+	ArtistsList = `/weapi/v1/artist/`
 )

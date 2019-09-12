@@ -1,5 +1,7 @@
 package types
 
+type Base struct{}
+
 // @Title SearchMusic
 // @Description Search music
 // @Params keywords   	 query    string    true    "search criteria keywords"
@@ -12,4 +14,33 @@ type SearchParams struct {
 	Type     int    `json:"type"`
 	Limit    int    `json:"limit" default:"30"`
 	Offset   int    `json:"offset"`
+}
+
+type Artist struct {
+	Name        string `json:"name"`
+	TopicPerson int    `json:"topicPerson"`
+	AlbumSize   int    `json:"albumSize"`
+	MusicSize   int    `json:"musicSize"`
+	MVSize      int    `json:"mvSize"`
+}
+
+type HotSong struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	EQ   string `json:"eq"`
+	AR   []struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"ar"`
+	AL struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"al"`
+}
+
+type Artists struct {
+	Artist   Artist    `json:"artist"`
+	HotSongs []HotSong `json:"hotSongs"`
+	More     bool      `json:"more"`
+	Code     int       `json:"code"`
 }

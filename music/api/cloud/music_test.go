@@ -40,3 +40,19 @@ func TestMusicModule_SearchMusic(t *testing.T) {
 	}
 	t.Log(b)
 }
+
+func TestMusicModule_ArtistsList(t *testing.T) {
+	Loggers, _ = log.New(true, "test")
+	Api = NewCloudAPI(Loggers, "")
+	res, err := Api.Music().ArtistsList("6452", types.Base{})
+	if err != nil {
+		t.Error(err)
+	}
+	var b types.Artists
+	err = json.Unmarshal(res, &b)
+	if err != nil {
+		err = errors.WithStack(err)
+		return
+	}
+	t.Log(len(b.HotSongs))
+}
