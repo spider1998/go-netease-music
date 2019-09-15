@@ -1,7 +1,8 @@
 package url
 
 const (
-	Host                      = "http://music.163.com"
+	Host                      = "https://music.163.com"
+	LiuxUrl 					  = `https://music.163.com/api/linux/forward`
 	CellphoneLoginUrl         = `/weapi/login/cellphone?csrf_token=`
 	RefreshLoginUrl           = `/weapi/login/token/refresh`
 	Logout                    = `/weapi/login/token/logout`

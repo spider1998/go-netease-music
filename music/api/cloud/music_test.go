@@ -61,7 +61,7 @@ func TestMusicModule_GetLyrics(t *testing.T) {
 	Loggers, _ = log.New(true, "test")
 	Api = NewCloudAPI(Loggers, "")
 	res, err := Api.Music().GetLyrics(types.GetLyricsRequest{
-		ID: "33894312",
+		ID: 33894312,
 	})
 	if err != nil {
 		t.Error(err)

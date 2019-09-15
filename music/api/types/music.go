@@ -46,7 +46,7 @@ type Artists struct {
 }
 
 type GetLyricsRequest struct {
-	ID string `json:"id"`
+	ID int `json:"id"`
 }
 
 type Lyrics struct {

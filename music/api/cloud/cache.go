@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	redisDSN string = "192.168.35.233:6379"
+	redisDSN string = "localhost:6379"
 	redisLog log.Logger
 )
 

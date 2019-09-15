@@ -44,7 +44,7 @@ func randomUserAgent() string {
 	return userAgentList[r.Intn(19)]
 }
 
-func do(req *http.Request, cookies []*http.Cookie) (*http.Response, error) {
+func do(req *http.Request, cookies []*http.Cookie,api string) (*http.Response, error) {
 	basecookie := GenerateBaseCookie()
 	cookies = append(cookies, basecookie...)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -54,7 +54,11 @@ func do(req *http.Request, cookies []*http.Cookie) (*http.Response, error) {
 	req.Header.Set("Referer", "http://music.163.com")
 	req.Header.Set("Host", "music.163.com")
 	req.Header.Set("Cookie", "appver=2.0.2")
-	req.Header.Set("User-Agent", randomUserAgent())
+	if api == "linux"{
+		req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36")
+	}else {
+		req.Header.Set("User-Agent", randomUserAgent())
+	}
 	for _, cookie := range cookies {
 		req.Header.Add("Cookie", cookie.String())
 	}
@@ -137,7 +141,71 @@ func CloudRequest(URL string, params map[string]interface{}, cookies []*http.Coo
 		err = errors.WithStack(err)
 		return
 	}
-	resp, err := do(req, cookies)
+	resp, err := do(req, cookies,"weapi")
+	if err != nil {
+		err = errors.WithStack(err)
+		return
+	}
+	defer resp.Body.Close()
+
+	b, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		err = errors.WithStack(err)
+		return
+	}
+
+	if resp.StatusCode != 200 {
+		fmt.Println(resp.StatusCode)
+		var result api.APIError
+		err = json.Unmarshal(b, &result)
+		if err != nil {
+			err = errors.WithStack(err)
+			return
+		}
+		err = result.WithStatus(resp.StatusCode)
+		return
+	}
+	respCookies = resp.Cookies()
+	/*err = json.Unmarshal(b, &res)
+	if err != nil {
+		err = errors.WithStack(err)
+		return
+	}*/
+	res = b
+	return
+}
+
+func ECBCloudRequest(URL string, params map[string]interface{}, cookies []*http.Cookie) (res []byte, respCookies []*http.Cookie, err error) {
+	if params == nil {
+		params = make(map[string]interface{})
+	}
+	type LinuxApi struct {
+		Method string `json:"method"`
+		URL string `json:"url"`
+		Params map[string]interface{} `json:"params"`
+	}
+	var ob LinuxApi
+	ob.Method = "POST"
+	ob.Params = params
+	ob.URL = strings.Replace(URL,"weapi","api",-1)
+	b, err := json.Marshal(ob)
+	if err != nil {
+		err = errors.WithStack(err)
+		return
+	}
+	encText := AesEncryptECB(string(b))
+	form := url.Values{}
+	form.Set("eparams", encText)
+	body := strings.NewReader(form.Encode())
+	lurl := `https://music.163.com/api/linux/forward`
+
+
+	req, err := http.NewRequest(http.MethodPost, lurl, body)
+	if err != nil {
+		err = errors.WithStack(err)
+		return
+	}
+	resp, err := do(req, cookies,"linux")
 	if err != nil {
 		err = errors.WithStack(err)
 		return
