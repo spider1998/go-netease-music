@@ -9,6 +9,7 @@ type CloudAPI struct {
 	auth  TestModule
 	user  UserModule
 	music MusicModule
+	album AlbumModule
 }
 
 func NewCloudAPI(logger log.Logger, gateway string) *CloudAPI {
@@ -18,6 +19,7 @@ func NewCloudAPI(logger log.Logger, gateway string) *CloudAPI {
 	api.auth = TestModule{api}
 	api.user = UserModule{api}
 	api.music = MusicModule{api}
+	api.album = AlbumModule{api}
 	return api
 }
 
@@ -31,4 +33,8 @@ func (api CloudAPI) User() UserModule {
 
 func (api CloudAPI) Music() MusicModule {
 	return api.music
+}
+
+func (api CloudAPI) Album() AlbumModule {
+	return api.album
 }

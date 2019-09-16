@@ -13,7 +13,7 @@ type SearchParams struct {
 	Keywords string `json:"s"`
 	Type     int    `json:"type"`
 	Limit    int    `json:"limit" default:"30"`
-	Offset   int    `json:"offset"`
+	Offset   int    `json:"offset" default:"0"`
 }
 
 type Artist struct {

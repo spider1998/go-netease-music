@@ -26,4 +26,7 @@ const (
 	ISRegisted       = `/eapi/cellphone/existence/check`
 	ISRegistedExt    = `/api/cellphone/existence/check`
 	ArtistsList      = `/weapi/v1/artist/`
+	ArtistAlbums	 = `/weapi/artist/albums/`
+
+
 )

@@ -43,6 +43,11 @@ func StructToMap(s interface{}, tag string) map[string]interface{} {
 			if len(tags) > 0 && tags[0] != "-" {
 				params[tags[0]] = int(v.Field(i).Int())
 			}
+		case reflect.Bool:
+			tags := strings.Split(ft.Tag.Get(tag), ",")
+			if len(tags) > 0 && tags[0] != "-" {
+				params[tags[0]] = v.Field(i).Bool()
+			}
 		default:
 			panic(fmt.Sprintf("invalid type \"%s\" of field \"%s\" in struct \"%s\".", ft.Type.Kind(), ft.Name, t.Kind()))
 		}

@@ -64,6 +64,7 @@ func do(req *http.Request, cookies []*http.Cookie, api string, header map[string
 	for _, cookie := range cookies {
 		req.Header.Add("Cookie", cookie.String())
 	}
+	//eapi cookie:
 	//req.Header.Set("Cookie", "osver=undefined; deviceId=undefined; appver=6.1.1; versioncode=140; mobilename=undefined; buildver="+header["buildver"].(string)+"; resolution=1920x1080; __csrf=; os=android; channel=undefined; requestId="+header["requestId"].(string))
 	return client.Do(req)
 }
