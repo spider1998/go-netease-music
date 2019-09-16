@@ -5,3 +5,7 @@ type CellLoginRequest struct {
 	Password      string `json:"password"`
 	RememberLogin string `json:"rememberLogin"`
 }
+
+type IsRegisterRequest struct {
+	Cellphone string `json:"cellphone"`
+}

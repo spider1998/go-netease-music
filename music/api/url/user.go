@@ -1,7 +1,7 @@
 package url
 
 const (
-	Host                      = "https://music.163.com"
+	Host                      = "http://music.163.com"
 	LiuxUrl                   = `https://music.163.com/api/linux/forward`
 	CellphoneLoginUrl         = `/weapi/login/cellphone?csrf_token=`
 	RefreshLoginUrl           = `/weapi/login/token/refresh`
@@ -23,6 +23,7 @@ const (
 	SearchSuggest    = `/weapi/search/suggest/web`
 	GetMusicLyric    = `/weapi/song/lyric?lv=-1&kv=-1&tv=-1`
 	GetSongDetail    = `/weapi/v3/song/detail`
-
-	ArtistsList = `/weapi/v1/artist/`
+	ISRegisted       = `/eapi/cellphone/existence/check`
+	ISRegistedExt    = `/api/cellphone/existence/check`
+	ArtistsList      = `/weapi/v1/artist/`
 )

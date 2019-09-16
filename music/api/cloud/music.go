@@ -22,7 +22,7 @@ func (m MusicModule) GetLyrics(request types.GetLyricsRequest) (res []byte, err 
 	if res != nil {
 		return
 	}
-	res, cookies, err := util.ECBCloudRequest(url.Host+url.GetMusicLyric, req, defaultCookies)
+	res, cookies, err := util.LAPICloudRequest(url.Host+url.GetMusicLyric, req, defaultCookies)
 	if err != nil {
 		return
 	}

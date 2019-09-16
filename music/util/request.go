@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"io/ioutil"
+	"math"
 	"math/rand"
 	"music/api"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -44,7 +46,7 @@ func randomUserAgent() string {
 	return userAgentList[r.Intn(19)]
 }
 
-func do(req *http.Request, cookies []*http.Cookie, api string) (*http.Response, error) {
+func do(req *http.Request, cookies []*http.Cookie, api string, header map[string]interface{}) (*http.Response, error) {
 	basecookie := GenerateBaseCookie()
 	cookies = append(cookies, basecookie...)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -62,56 +64,9 @@ func do(req *http.Request, cookies []*http.Cookie, api string) (*http.Response, 
 	for _, cookie := range cookies {
 		req.Header.Add("Cookie", cookie.String())
 	}
-
+	//req.Header.Set("Cookie", "osver=undefined; deviceId=undefined; appver=6.1.1; versioncode=140; mobilename=undefined; buildver="+header["buildver"].(string)+"; resolution=1920x1080; __csrf=; os=android; channel=undefined; requestId="+header["requestId"].(string))
 	return client.Do(req)
 }
-
-/*func GetMethond(args map[string]string, urls string, cookies []*http.Cookie) (res interface{}, err error) {
-	csrf := GetCookieValueByName(cookies, "__csrf")
-
-	URL, err := url.Parse(urls)
-	if err != nil {
-		return
-	}
-	query := URL.Query()
-	for key, val := range args {
-		query.Add(key, val)
-	}
-	URL.RawQuery = query.Encode()
-	req, err := http.NewRequest(http.MethodGet, URL.String(), nil)
-	if err != nil {
-		return
-	}
-	resp, err := do(req)
-	if err != nil {
-		err = errors.WithStack(err)
-		return
-	}
-	defer resp.Body.Close()
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		err = errors.WithStack(err)
-		return
-	}
-
-	if resp.StatusCode != 200 {
-		logs.Error("response error", string(b))
-		var result api.APIError
-		err = json.Unmarshal(b, &result)
-		if err != nil {
-			err = errors.WithStack(err)
-			return
-		}
-		err = result.WithStatus(resp.StatusCode)
-		return
-	}
-	err = json.Unmarshal(b, &res)
-	if err != nil {
-		err = errors.WithStack(err)
-		return
-	}
-	return
-}*/
 
 func CloudRequest(URL string, params map[string]interface{}, cookies []*http.Cookie) (res []byte, respCookies []*http.Cookie, err error) {
 	if params == nil {
@@ -141,7 +96,7 @@ func CloudRequest(URL string, params map[string]interface{}, cookies []*http.Coo
 		err = errors.WithStack(err)
 		return
 	}
-	resp, err := do(req, cookies, "weapi")
+	resp, err := do(req, cookies, "weapi", nil)
 	if err != nil {
 		err = errors.WithStack(err)
 		return
@@ -155,7 +110,6 @@ func CloudRequest(URL string, params map[string]interface{}, cookies []*http.Coo
 	}
 
 	if resp.StatusCode != 200 {
-		fmt.Println(resp.StatusCode)
 		var result api.APIError
 		err = json.Unmarshal(b, &result)
 		if err != nil {
@@ -175,7 +129,7 @@ func CloudRequest(URL string, params map[string]interface{}, cookies []*http.Coo
 	return
 }
 
-func ECBCloudRequest(URL string, params map[string]interface{}, cookies []*http.Cookie) (res []byte, respCookies []*http.Cookie, err error) {
+func LAPICloudRequest(URL string, params map[string]interface{}, cookies []*http.Cookie) (res []byte, respCookies []*http.Cookie, err error) {
 	if params == nil {
 		params = make(map[string]interface{})
 	}
@@ -193,7 +147,7 @@ func ECBCloudRequest(URL string, params map[string]interface{}, cookies []*http.
 		err = errors.WithStack(err)
 		return
 	}
-	encText := AesEncryptECB(string(b))
+	encText := AesEncryptECB(string(b), "lapi")
 	form := url.Values{}
 	form.Set("eparams", encText)
 	body := strings.NewReader(form.Encode())
@@ -204,7 +158,7 @@ func ECBCloudRequest(URL string, params map[string]interface{}, cookies []*http.
 		err = errors.WithStack(err)
 		return
 	}
-	resp, err := do(req, cookies, "linux")
+	resp, err := do(req, cookies, "linux", nil)
 	if err != nil {
 		err = errors.WithStack(err)
 		return
@@ -237,3 +191,106 @@ func ECBCloudRequest(URL string, params map[string]interface{}, cookies []*http.
 	res = b
 	return
 }
+
+func EAPICloudRequest(URL string, params map[string]interface{}, cookies []*http.Cookie, dURL string) (res []byte, respCookies []*http.Cookie, err error) {
+	if params == nil {
+		params = make(map[string]interface{})
+	}
+	cookieMap := map[string]interface{}{}
+	for _, cookie := range cookies {
+		cookieMap[cookie.Name] = cookie.Value
+	}
+	rand.Seed(time.Now().Unix())
+
+	requestID := strconv.FormatFloat(math.Floor(float64(rand.Intn(1000))), 'f', -1, 64)
+	if len(requestID) == 1 {
+		requestID = "000" + requestID
+	} else if len(requestID) == 2 {
+		requestID = "00" + requestID
+	} else if len(requestID) == 3 {
+		requestID = "0" + requestID
+	}
+	header := map[string]interface{}{
+		"osver":       cookieMap["osver"],
+		"deviceId":    cookieMap["deviceId"],
+		"appver":      `6.1.1`,
+		"versioncode": "140",
+		"mobilename":  cookieMap["mobilename"],
+		"buildver":    strconv.FormatInt((time.Now().UnixNano() / 1e6), 10)[:10],
+		"resolution":  "1920x1080",
+		"__csrf":      cookieMap["__csrf"],
+		"os":          "android",
+		"channel":     cookieMap["channel"],
+		"requestId":   strconv.FormatInt((time.Now().UnixNano()/1e6), 10) + `_` + requestID,
+	}
+	if cookieMap["MUSIC_U"] != nil {
+		header["MUSIC_U"] = cookieMap["MUSIC_U"]
+	} else if cookieMap["MUSIC_A"] != nil {
+		header["MUSIC_A"] = cookieMap["MUSIC_A"]
+	}
+	params["header"] = header
+	b, err := json.Marshal(params)
+	if err != nil {
+		err = errors.WithStack(err)
+		return
+	}
+	lurl := strings.Replace(URL, "weapi", "eapi", -1)
+
+	encText := EAPIAesEncryptECB(string(b), dURL)
+	form := url.Values{}
+	form.Set("params", encText)
+	body := strings.NewReader(form.Encode())
+	req, err := http.NewRequest(http.MethodPost, lurl, body)
+	if err != nil {
+		err = errors.WithStack(err)
+		return
+	}
+	resp, err := do(req, cookies, "eapi", header)
+	if err != nil {
+		err = errors.WithStack(err)
+		return
+	}
+	defer resp.Body.Close()
+
+	b, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		err = errors.WithStack(err)
+		return
+	}
+
+	if resp.StatusCode != 200 {
+		fmt.Println(resp.StatusCode)
+		var result api.APIError
+		err = json.Unmarshal(b, &result)
+		if err != nil {
+			err = errors.WithStack(err)
+			return
+		}
+		err = result.WithStatus(resp.StatusCode)
+		return
+	}
+	respCookies = resp.Cookies()
+	/*err = json.Unmarshal(b, &res)
+	if err != nil {
+		err = errors.WithStack(err)
+		return
+	}*/
+	res = b
+	return
+}
+
+//AB786F8DF53844553FC327689D15CB12D5736D1C59E786E1C198C85D34D798CFA64B970985C975A90515F3B94
+// 3CDB31E7987F74C5A518DF48750D5920011F63CB6BEB7DA24EAB342F5717ACD61B6BAE091E0742D40A827412
+// 8C085BF999F92974F7DBDB8A415C46451770B82C26C917E2DCFCD0FE3DC246A97FA29CEF9F32A45FA6E22F2FD
+// 1D73DD95A24D9EF56138F0AFBEB788BAABF569873D35D203111923693B7F723D1FD4057F24CD7BDB55E38C117
+// B7BECA13AF812FFCB6AB615B6360936F70BB019F9F72B44F7815238182B1337D3AF7E28FAB9A61F3AF675EDDA
+// FDB5F5D87FA332040217F46FA35EBB7E2424FE102AE342B7ADCA8FA367140018186ACB355E9513AEC4F59C487
+// AE929AB0ED8C39E770E77FD65AF6A77C21A742DA7217B4FEF0F7BC84E6B8766D124F8AACE8A727CF93452405DB
+// 018D56B73B89B3C9EE5136D7C8330DDBE6C8FB2F092C05A5933C4745F701671A8FC6B560E6BD46C20
+
+//AF047AB9ACC436C08101E8542E2D2378AB110DB4C7B0F4BC32B33E80214D1C93505F488051A7322EB8029486A03FC3
+// 6BEAA551A43FE77B3B021D577B90D0D028DA77DDAB687FF8335AF34F1CEE72B2B74067152BC2FF7A379F1929BDE32
+// 06FDE6C997E67CE2E4C5E7256D5C9B731C1149DC72EB230CD4018EE1DAF6744E4FD665BCC3C7CBDE88825429811321
+// F51227A68972E12B0409D98A2D0A79394E7C48CB828842778F99FFE415A35EECFD5DECC62EABDE766EB72F92FE5DB4
+// BBE9AD2255A0B4E447FBC29C4F1F2DD4AC9FFC0352204C67320CF51CD44E2EB3F5EFBBC09BBF21C9291E9A23CE4733
+// 012EB3E55604BDE4BD27DC60C326AEED29F753FCEB390E4D0C3A8726504180BB763CC33BF7C6AA3B102FBE7296AB0DB9EA5C46AD12B
