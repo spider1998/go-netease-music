@@ -52,5 +52,3 @@ func generateKey(key []byte) (genKey []byte) {
 	}
 	return genKey
 }
-
-

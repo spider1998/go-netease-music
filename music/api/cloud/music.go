@@ -10,6 +10,7 @@ type MusicModule struct {
 	api *CloudAPI
 }
 
+//GetLyrics Get single lyrics
 func (m MusicModule) GetLyrics(request types.GetLyricsRequest) (res []byte, err error) {
 	defaultCookies, err := util.GetCookiesForEnv()
 	if err != nil {
@@ -31,6 +32,7 @@ func (m MusicModule) GetLyrics(request types.GetLyricsRequest) (res []byte, err 
 	return
 }
 
+//ArtistsList Get a list of artists' popular singles（50）
 func (m MusicModule) ArtistsList(id string, request types.Base) (res []byte, err error) {
 	defaultCookies, err := util.GetCookiesForEnv()
 	if err != nil {
@@ -52,6 +54,7 @@ func (m MusicModule) ArtistsList(id string, request types.Base) (res []byte, err
 	return
 }
 
+//SearchMusic Search
 func (m MusicModule) SearchMusic(request types.SearchParams) (res []byte, err error) {
 	defaultCookies, err := util.GetCookiesForEnv()
 	if err != nil {

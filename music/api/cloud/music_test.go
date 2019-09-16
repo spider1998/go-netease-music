@@ -66,7 +66,7 @@ func TestMusicModule_GetLyrics(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	var b map[string]interface{}
+	var b types.Lyrics
 	err = json.Unmarshal(res, &b)
 	if err != nil {
 		err = errors.WithStack(err)

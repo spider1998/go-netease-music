@@ -44,7 +44,7 @@ func randomUserAgent() string {
 	return userAgentList[r.Intn(19)]
 }
 
-func do(req *http.Request, cookies []*http.Cookie,api string) (*http.Response, error) {
+func do(req *http.Request, cookies []*http.Cookie, api string) (*http.Response, error) {
 	basecookie := GenerateBaseCookie()
 	cookies = append(cookies, basecookie...)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -54,9 +54,9 @@ func do(req *http.Request, cookies []*http.Cookie,api string) (*http.Response, e
 	req.Header.Set("Referer", "http://music.163.com")
 	req.Header.Set("Host", "music.163.com")
 	req.Header.Set("Cookie", "appver=2.0.2")
-	if api == "linux"{
+	if api == "linux" {
 		req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36")
-	}else {
+	} else {
 		req.Header.Set("User-Agent", randomUserAgent())
 	}
 	for _, cookie := range cookies {
@@ -141,7 +141,7 @@ func CloudRequest(URL string, params map[string]interface{}, cookies []*http.Coo
 		err = errors.WithStack(err)
 		return
 	}
-	resp, err := do(req, cookies,"weapi")
+	resp, err := do(req, cookies, "weapi")
 	if err != nil {
 		err = errors.WithStack(err)
 		return
@@ -180,14 +180,14 @@ func ECBCloudRequest(URL string, params map[string]interface{}, cookies []*http.
 		params = make(map[string]interface{})
 	}
 	type LinuxApi struct {
-		Method string `json:"method"`
-		URL string `json:"url"`
+		Method string                 `json:"method"`
+		URL    string                 `json:"url"`
 		Params map[string]interface{} `json:"params"`
 	}
 	var ob LinuxApi
 	ob.Method = "POST"
 	ob.Params = params
-	ob.URL = strings.Replace(URL,"weapi","api",-1)
+	ob.URL = strings.Replace(URL, "weapi", "api", -1)
 	b, err := json.Marshal(ob)
 	if err != nil {
 		err = errors.WithStack(err)
@@ -199,13 +199,12 @@ func ECBCloudRequest(URL string, params map[string]interface{}, cookies []*http.
 	body := strings.NewReader(form.Encode())
 	lurl := `https://music.163.com/api/linux/forward`
 
-
 	req, err := http.NewRequest(http.MethodPost, lurl, body)
 	if err != nil {
 		err = errors.WithStack(err)
 		return
 	}
-	resp, err := do(req, cookies,"linux")
+	resp, err := do(req, cookies, "linux")
 	if err != nil {
 		err = errors.WithStack(err)
 		return

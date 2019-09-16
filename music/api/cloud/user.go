@@ -12,6 +12,7 @@ type UserModule struct {
 	api *CloudAPI
 }
 
+//Login
 func (u UserModule) Login(req types.CellLoginRequest) (res interface{}, err error) {
 	defaultCookies := util.SetupDefaultCookie()
 	data := []byte(req.Password)
